@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   SafeAreaView,
+  Alert,
 } from 'react-native';
-import { Users } from 'lucide-react-native';
+import { Users, Trash2 } from 'lucide-react-native'; // Importo ícono de basura
 import NuevoGastoModal from '@/components/ButtonNew';
 import { useGastos } from '@/contexts/GastosContext';
 
@@ -21,7 +22,7 @@ type NuevoGasto = {
 
 export default function Home() {
   const [modalVisible, setModalVisible] = useState(false);
-  const { gastos, agregarGasto, totalGastos, cargando } = useGastos();
+  const { gastos, agregarGasto, eliminarGasto, totalGastos, cargando } = useGastos();
 
   const handleGuardarGasto = async (nuevoGasto: NuevoGasto) => {
     await agregarGasto({
@@ -33,6 +34,17 @@ export default function Home() {
       categoria: 'General',
     });
     setModalVisible(false);
+  };
+
+  const confirmarEliminar = (id: string) => {
+    Alert.alert(
+      'Eliminar gasto',
+      '¿Estás seguro de que quieres eliminar este gasto?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Eliminar', style: 'destructive', onPress: () => eliminarGasto(id) },
+      ]
+    );
   };
 
   if (cargando) {
@@ -96,7 +108,7 @@ export default function Home() {
                   </View>
                 </View>
 
-                <View className="flex-row justify-between items-center">
+                <View className="flex-row justify-between items-center mb-2">
                   {/* Participantes */}
                   <View className="flex-row gap-1">
                     {item.participantes.map((p, idx) => (
@@ -117,6 +129,15 @@ export default function Home() {
                     </View>
                   ) : null}
                 </View>
+
+                {/* Botón para eliminar */}
+                <TouchableOpacity
+                  onPress={() => confirmarEliminar(item.id)}
+                  className="mt-2 self-end bg-red-100 px-3 py-1 rounded-full flex-row items-center"
+                >
+                  <Trash2 size={16} color="#dc2626" />
+                  <Text className="text-red-600 ml-1 text-sm font-semibold">Eliminar</Text>
+                </TouchableOpacity>
               </View>
             )}
             contentContainerStyle={{ paddingBottom: 100 }}
