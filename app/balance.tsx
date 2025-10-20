@@ -3,7 +3,6 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
 import { useGastos } from '@/contexts/GastosContext';
@@ -11,23 +10,86 @@ import { useGastos } from '@/contexts/GastosContext';
 const PARTICIPANTES = ['Juan', 'Maria', 'Pedro'];
 
 export default function Balance() {
-  const { calcularDeudas, totalGastos } = useGastos();
-  const deudas = calcularDeudas();
+  const { gastos, totalGastos } = useGastos();
 
-  // Calcular gastos por persona
-  const { gastos } = useGastos();
-  const gastosPorPersona: { [key: string]: number } = {};
-  
+  // Calcular cuánto pagó cada persona
+  const gastosPagadosPorPersona: { [key: string]: number } = {};
   PARTICIPANTES.forEach(p => {
-    gastosPorPersona[p] = gastos
+    gastosPagadosPorPersona[p] = gastos
       .filter(g => g.pagadoPor === p)
       .reduce((acc, g) => acc + g.monto, 0);
   });
 
-  const promedioPorPersona = totalGastos / PARTICIPANTES.length;
+  // Calcular cuánto debe pagar cada persona según su participación
+  const gastosAsignadosPorPersona: { [key: string]: number } = {};
+  PARTICIPANTES.forEach(p => {
+    gastosAsignadosPorPersona[p] = 0;
+  });
 
+  gastos.forEach(gasto => {
+    const numParticipantes = gasto.participantes.length;
+    const montoPorParticipante = gasto.monto / numParticipantes;
+
+    gasto.participantes.forEach(participanteInicial => {
+      // Obtener nombre completo del participante a partir de la inicial
+      const participanteNombre = PARTICIPANTES.find(p => p[0] === participanteInicial);
+      if (participanteNombre) {
+        gastosAsignadosPorPersona[participanteNombre] += montoPorParticipante;
+      }
+    });
+  });
+
+  // Función para calcular las deudas simplificadas (quién debe a quién y cuánto)
+  const calcularDeudas = () => {
+    // Balance: pagado - asignado
+    const balancePorPersona: { [key: string]: number } = {};
+    PARTICIPANTES.forEach(p => {
+      const pagado = gastosPagadosPorPersona[p] || 0;
+      const asignado = gastosAsignadosPorPersona[p] || 0;
+      balancePorPersona[p] = pagado - asignado;
+    });
+
+    // Separar deudores y acreedores
+    const deudores = Object.entries(balancePorPersona)
+      .filter(([_, balance]) => balance < 0)
+      .map(([persona, balance]) => ({ persona, deuda: -balance }));
+
+    const acreedores = Object.entries(balancePorPersona)
+      .filter(([_, balance]) => balance > 0)
+      .map(([persona, balance]) => ({ persona, credito: balance }));
+
+    const deudas: { deudor: string; acreedor: string; monto: number }[] = [];
+
+    let i = 0; // índice de deudores
+    let j = 0; // índice de acreedores
+
+    while (i < deudores.length && j < acreedores.length) {
+      const deudor = deudores[i];
+      const acreedor = acreedores[j];
+
+      const monto = Math.min(deudor.deuda, acreedor.credito);
+
+      deudas.push({
+        deudor: deudor.persona,
+        acreedor: acreedor.persona,
+        monto,
+      });
+
+      deudor.deuda -= monto;
+      acreedor.credito -= monto;
+
+      if (deudor.deuda === 0) i++;
+      if (acreedor.credito === 0) j++;
+    }
+
+    return deudas;
+  };
+
+  const deudas = calcularDeudas();
 
   const getInicial = (nombre: string) => nombre[0];
+
+  const promedioPorPersona = totalGastos / PARTICIPANTES.length;
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -47,7 +109,9 @@ export default function Balance() {
           <View className="flex-row items-center mb-4">
             <Text className="text-green-600 text-2xl font-bold mr-2">$</Text>
             <Text className="text-gray-800 text-xl font-bold">
-              Resumen de Deudas
+              {deudas.length === 0
+                ? '¡Todo está equilibrado!'
+                : 'Resumen de Deudas: Quién debe a quién'}
             </Text>
           </View>
 
@@ -86,7 +150,7 @@ export default function Balance() {
                     </View>
                   </View>
 
-                  {/* Monto y botón */}
+                  {/* Monto */}
                   <View className="items-end">
                     <Text className="text-red-600 text-xl font-bold mb-2">
                       ${deuda.monto.toFixed(2)}
@@ -112,7 +176,11 @@ export default function Balance() {
               <Text key={persona} className="text-gray-700 text-sm mb-1">
                 {persona} gastó:{' '}
                 <Text className="font-semibold">
-                  ${gastosPorPersona[persona]?.toFixed(2) || '0.00'}
+                  ${gastosPagadosPorPersona[persona]?.toFixed(2) || '0.00'}
+                </Text>{' '}
+                y debe pagar:{' '}
+                <Text className="font-semibold">
+                  ${gastosAsignadosPorPersona[persona]?.toFixed(2) || '0.00'}
                 </Text>
               </Text>
             ))}

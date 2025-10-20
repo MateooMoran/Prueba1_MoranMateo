@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
-import { Users, Trash2 } from 'lucide-react-native'; // Importo ícono de basura
+import { Users, Trash2 } from 'lucide-react-native'; 
 import NuevoGastoModal from '@/components/ButtonNew';
 import { useGastos } from '@/contexts/GastosContext';
 
@@ -69,7 +69,7 @@ export default function Home() {
           <View className="flex-row justify-between items-center mb-2">
             <Text className="text-blue-100 text-sm font-medium">Total gastado</Text>
             <View className="bg-white bg-opacity-20 rounded-full p-2">
-              <Users size={18} color="#ffffff" />
+              <Users size={20} color="#1d4ed8" />
             </View>
           </View>
           <Text className="text-white text-4xl font-bold mb-1">
