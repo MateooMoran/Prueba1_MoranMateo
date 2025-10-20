@@ -11,23 +11,26 @@ import { Users } from 'lucide-react-native';
 import NuevoGastoModal from '@/components/ButtonNew';
 import { useGastos } from '@/contexts/GastosContext';
 
+type NuevoGasto = {
+  descripcion: string;
+  monto: string;
+  pagadoPor: string;
+  participantes: string[];
+  fotoUri: string | null;
+};
+
 export default function Home() {
   const [modalVisible, setModalVisible] = useState(false);
   const { gastos, agregarGasto, totalGastos, cargando } = useGastos();
 
-  const handleGuardarGasto = async (nuevoGasto: {
-    descripcion: string;
-    monto: string;
-    pagadoPor: string;
-    fotoUri: string | null;
-  }) => {
+  const handleGuardarGasto = async (nuevoGasto: NuevoGasto) => {
     await agregarGasto({
       descripcion: nuevoGasto.descripcion,
       monto: Number(nuevoGasto.monto),
       pagadoPor: nuevoGasto.pagadoPor,
       fotoUri: nuevoGasto.fotoUri || '',
-      participantes: ['J', 'M', 'P'], // Juan, Maria, Pedro
-      categoria: 'General', // Puedes agregar selector de categoría después
+      participantes: nuevoGasto.participantes, 
+      categoria: 'General',
     });
     setModalVisible(false);
   };
@@ -52,9 +55,7 @@ export default function Home() {
         {/* Card de Total Gastado */}
         <View className="bg-blue-500 bg-opacity-40 rounded-2xl p-5">
           <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-blue-100 text-sm font-medium">
-              Total gastado
-            </Text>
+            <Text className="text-blue-100 text-sm font-medium">Total gastado</Text>
             <View className="bg-white bg-opacity-20 rounded-full p-2">
               <Users size={18} color="#ffffff" />
             </View>
@@ -73,9 +74,7 @@ export default function Home() {
         {gastos.length === 0 ? (
           <View className="flex-1 justify-center items-center py-20">
             <Text className="text-gray-400 text-lg mb-2">No hay gastos aún</Text>
-            <Text className="text-gray-400 text-sm">
-              Presiona el botón + para agregar uno
-            </Text>
+            <Text className="text-gray-400 text-sm">Presiona el botón + para agregar uno</Text>
           </View>
         ) : (
           <FlatList
@@ -89,17 +88,11 @@ export default function Home() {
                     <Text className="text-gray-900 text-base font-semibold mb-1">
                       {item.descripcion}
                     </Text>
-                    <Text className="text-gray-500 text-sm">
-                      Pagado por {item.pagadoPor}
-                    </Text>
+                    <Text className="text-gray-500 text-sm">Pagado por {item.pagadoPor}</Text>
                   </View>
                   <View className="items-end">
-                    <Text className="text-gray-900 text-lg font-bold">
-                      ${item.monto}
-                    </Text>
-                    <Text className="text-gray-400 text-xs mt-1">
-                      {item.fecha}
-                    </Text>
+                    <Text className="text-gray-900 text-lg font-bold">${item.monto}</Text>
+                    <Text className="text-gray-400 text-xs mt-1">{item.fecha}</Text>
                   </View>
                 </View>
 
@@ -111,22 +104,18 @@ export default function Home() {
                         key={idx}
                         className="bg-blue-100 w-8 h-8 rounded-full items-center justify-center"
                       >
-                        <Text className="text-blue-600 text-xs font-semibold">
-                          {p}
-                        </Text>
+                        <Text className="text-blue-600 text-xs font-semibold">{p}</Text>
                       </View>
                     ))}
                   </View>
 
                   {/* Estado del recibo */}
-                  {item.fotoUri && (
+                  {item.fotoUri ? (
                     <View className="flex-row items-center">
                       <View className="bg-green-500 w-2 h-2 rounded-full mr-1" />
-                      <Text className="text-green-600 text-xs font-medium">
-                        Recibo verificado
-                      </Text>
+                      <Text className="text-green-600 text-xs font-medium">Recibo verificado</Text>
                     </View>
-                  )}
+                  ) : null}
                 </View>
               </View>
             )}

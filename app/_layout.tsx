@@ -5,7 +5,7 @@ import BottomTabs from '@/components/Tabs';
 import "../global.css";
 import { GastosProvider } from '@/contexts/GastosContext';
 
-type ScreenKey = 'inicio' | 'balance' | 'recibo' | 'reportes';
+type ScreenKey = 'inicio' | 'balance' | 'recibos' | 'reportes';
 
 export default function Layout() {
     const router = useRouter();
