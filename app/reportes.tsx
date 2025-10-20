@@ -13,7 +13,7 @@ import { Download, Share2, Calendar } from 'lucide-react-native';
 import { useGastos } from '@/contexts/GastosContext';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { generarHTMLPDF } from '@/components/PDF';
+import { generarHTMLPDF } from '@/components/generarHTMLPDF';
 
 type Categoria = {
   nombre: string;
