@@ -1,24 +1,27 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { Stack, useRouter } from 'expo-router';
+import React from 'react';
+import { View } from 'react-native';
+import BottomTabs from '@/components/BottomTabs';
+import "../global.css";
+import { GastosProvider } from '@/context/GastosContext';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+type ScreenKey = 'inicio' | 'balance' | 'recibo' | 'reportes';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+export default function Layout() {
+    const router = useRouter();
+    const [activeScreen, setActiveScreen] = React.useState<ScreenKey>('inicio');
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+    const handleTabPress = (key: ScreenKey) => {
+        setActiveScreen(key);
+        router.push(`/${key}`);
+    };
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+    return (
+        <GastosProvider>
+            <View style={{ flex: 1 }}>
+                <Stack screenOptions={{ headerShown: false }} />
+                <BottomTabs onTabPress={handleTabPress} />
+            </View>
+        </GastosProvider>
+    );
 }
