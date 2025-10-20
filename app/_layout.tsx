@@ -1,9 +1,9 @@
 import { Stack, useRouter } from 'expo-router';
 import React from 'react';
 import { View } from 'react-native';
-import BottomTabs from '@/components/BottomTabs';
+import BottomTabs from '@/components/Tabs';
 import "../global.css";
-import { GastosProvider } from '@/context/GastosContext';
+import { GastosProvider } from '@/contexts/GastosContext';
 
 type ScreenKey = 'inicio' | 'balance' | 'recibo' | 'reportes';
 

@@ -26,11 +26,6 @@ export default function Balance() {
 
   const promedioPorPersona = totalGastos / PARTICIPANTES.length;
 
-  const marcarPagado = (deudor: string, acreedor: string) => {
-    // Aquí podrías agregar lógica para marcar deudas como pagadas
-    console.log(`${deudor} pagó a ${acreedor}`);
-    alert(`Funcionalidad de marcar pagado: ${deudor} → ${acreedor}`);
-  };
 
   const getInicial = (nombre: string) => nombre[0];
 
@@ -96,14 +91,6 @@ export default function Balance() {
                     <Text className="text-red-600 text-xl font-bold mb-2">
                       ${deuda.monto.toFixed(2)}
                     </Text>
-                    <TouchableOpacity
-                      onPress={() => marcarPagado(deuda.deudor, deuda.acreedor)}
-                      className="bg-blue-50 px-3 py-1 rounded-lg"
-                    >
-                      <Text className="text-blue-600 text-xs font-semibold">
-                        Marcar pagado
-                      </Text>
-                    </TouchableOpacity>
                   </View>
                 </View>
               </View>

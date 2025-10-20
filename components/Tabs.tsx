@@ -8,7 +8,7 @@ import {
   LucideIcon
 } from 'lucide-react-native';
 
-type TabKey = 'inicio' | 'balance' | 'recibo' | 'reportes';
+type TabKey = 'inicio' | 'balance' | 'recibos' | 'reportes';
 
 type TabItem = {
   key: TabKey;
@@ -23,7 +23,7 @@ type Props = {
 const TABS: TabItem[] = [
   { key: 'inicio', label: 'Inicio', icon: Home },
   { key: 'balance', label: 'Balance', icon: Wallet },
-  { key: 'recibo', label: 'Recibos', icon: Receipt },
+  { key: 'recibos', label: 'Recibos', icon: Receipt },
   { key: 'reportes', label: 'Reporte', icon: BarChart2 },
 ];
 
